@@ -21,4 +21,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "KodeStaff"
 include(":app")
- 
+include(":feature:employees")
+include(":feature:profile")
+include(":core:database")
+include(":core:network")
+include(":core:ui")
+include(":data")
