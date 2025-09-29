@@ -1,0 +1,50 @@
+package com.example.data.mapper
+
+import com.example.data.models.Department
+import com.example.data.models.Employee
+import com.example.database.EmployeeEntity
+import com.example.network.dto.EmployeeDto
+import com.example.network.dto.ResponseDto
+import com.example.util.DateUtils
+import javax.inject.Inject
+
+class EmployeeMapper @Inject constructor() {
+
+    private fun dtoToEntity(dto: EmployeeDto): EmployeeEntity {
+        with(dto) {
+            return EmployeeEntity(
+                id = id,
+                avatarUrl = avatarUrl,
+                firstName = firstName,
+                lastName = lastName,
+                userTag = userTag,
+                department = department,
+                position = position,
+                birthday = DateUtils.dateToTimestamp(birthday),
+                phone = phone
+            )
+        }
+    }
+
+
+    fun responseDtoToListEntity(responseDto: ResponseDto): List<EmployeeEntity> {
+        return responseDto.employees.map {
+            dtoToEntity(it)
+        }
+    }
+
+    fun entityToModel(entity: EmployeeEntity) : Employee =
+        with(entity) {
+            Employee(
+                id = id,
+                avatarUrl = avatarUrl,
+                firstName = firstName,
+                lastName = lastName,
+                userTag = userTag,
+                department = Department.fromString(department),
+                position = position,
+                birthday = birthday,
+                phone = phone
+            )
+        }
+}
