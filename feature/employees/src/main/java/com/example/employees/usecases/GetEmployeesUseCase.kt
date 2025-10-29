@@ -1,4 +1,4 @@
-package com.example.employees
+package com.example.employees.usecases
 
 import com.example.data.EmployeesRepository
 import com.example.data.models.Employee
