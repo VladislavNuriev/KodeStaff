@@ -23,6 +23,5 @@ interface EmployeeDao {
             OR userTag LIKE '%' || :searchQuery || '%'
         )
     """)
-
     fun getEmployees(searchQuery: String = "", department: String = ""): Flow<List<EmployeeEntity>>
 }

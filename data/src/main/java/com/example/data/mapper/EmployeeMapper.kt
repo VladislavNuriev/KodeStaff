@@ -33,7 +33,13 @@ class EmployeeMapper @Inject constructor() {
         }
     }
 
-    fun entityToModel(entity: EmployeeEntity) : Employee =
+    fun responseDtoToListModel(responseDto: ResponseDto): List<Employee> {
+        return responseDto.employees.map {
+            dtoToModel(it)
+        }
+    }
+
+    fun entityToModel(entity: EmployeeEntity): Employee =
         with(entity) {
             Employee(
                 id = id,
@@ -47,4 +53,20 @@ class EmployeeMapper @Inject constructor() {
                 phone = phone
             )
         }
+
+    private fun dtoToModel(dto: EmployeeDto): Employee {
+        with(dto) {
+            return Employee(
+                id = id,
+                avatarUrl = avatarUrl,
+                firstName = firstName,
+                lastName = lastName,
+                userTag = userTag,
+                department = Department.fromString(department),
+                position = position,
+                birthday = DateUtils.dateToTimestamp(birthday),
+                phone = phone
+            )
+        }
+    }
 }
