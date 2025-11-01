@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.ui.AppGradient
 import com.example.ui.InterFontFamily
 import com.example.ui.KodeStaffTheme
@@ -60,7 +61,7 @@ private const val DEPARTMENT_TEST = "android"
 @Composable
 fun EmployeesScreen(
     modifier: Modifier = Modifier,
-//    viewModel: EmployeesViewModel = hiltViewModel(),
+    viewModel: EmployeesViewModel = hiltViewModel(),
     onEmployeeClick: () -> Unit = {},
 ) {
     var isRefreshing by remember { mutableStateOf(false) }
