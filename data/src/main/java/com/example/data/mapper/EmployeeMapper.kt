@@ -62,11 +62,31 @@ class EmployeeMapper @Inject constructor() {
                 firstName = firstName,
                 lastName = lastName,
                 userTag = userTag,
-                department = Department.fromString(department),
+                department = departmentDtoToModel(department),
                 position = position,
                 birthday = DateUtils.dateToTimestamp(birthday),
                 phone = phone
             )
+        }
+    }
+
+    private fun departmentDtoToModel(apiName: String): Department {
+        return when (apiName) {
+            "android" -> Department.fromString("Android")
+            "ios" -> Department.fromString("iOS")
+            "design" -> Department.fromString("Дизайн")
+            "management" -> Department.fromString("Менеджмент")
+            "qa" -> Department.fromString("QA")
+            "back_office" -> Department.fromString("Бэк-офис")
+            "frontend" -> Department.fromString("Frontend")
+            "hr" -> Department.fromString("HR")
+            "pr" -> Department.fromString("PR")
+            "backend" -> Department.fromString("Backend")
+            "support" -> Department.fromString("Техподдержка")
+            "analytics" -> Department.fromString("Аналитика")
+            else -> {
+                Department.Android
+            }
         }
     }
 }

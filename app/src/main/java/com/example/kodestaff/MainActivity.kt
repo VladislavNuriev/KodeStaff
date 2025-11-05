@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.employees.EmployeesScreen
+import com.example.employees.ui.EmployeesScreen
 import com.example.ui.KodeStaffTheme
 import dagger.hilt.android.AndroidEntryPoint
 
