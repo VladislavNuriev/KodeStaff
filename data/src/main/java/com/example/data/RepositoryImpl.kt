@@ -2,7 +2,6 @@ package com.example.data
 
 import android.util.Log
 import com.example.data.mapper.EmployeeMapper
-import com.example.data.mock.mockEmployees
 import com.example.data.models.Department
 import com.example.data.models.Employee
 import com.example.data.models.EmployeesFilter

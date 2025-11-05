@@ -66,10 +66,6 @@ import com.example.ui.InterFontFamily
 import com.example.ui.KodeStaffTheme
 
 
-// для тестирования
-private const val QUERY_TEST = "er"
-private const val DEPARTMENT_TEST = "android"
-
 @Composable
 fun EmployeesScreen(
     modifier: Modifier = Modifier,
