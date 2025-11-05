@@ -26,7 +26,7 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getEmployees(employeesFilter: EmployeesFilter): Flow<List<Employee>> {
         return _employees.map { employees ->
             employees
-                .filterByCategory(employeesFilter.department)
+                .filterByDepartment(employeesFilter.department)
                 .filterBySearchQuery(employeesFilter.searchQuery)
                 .sortEmployees(employeesFilter.sortType)
         }
@@ -43,7 +43,7 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    private fun List<Employee>.filterByCategory(department: Department?): List<Employee> {
+    private fun List<Employee>.filterByDepartment(department: Department?): List<Employee> {
         return if (department == null) this
         else this.filter { it.department == department }
     }
