@@ -1,7 +1,7 @@
 Разрабатывается в соответствии с требованиями https://github.com/appKODE/trainee-test-android
 Приложение позволяет загружать список сотрудников и фильтровать их поисковым запросом, а также по принадлежности к отделу.
 
-![Screen_recording](https://github.com/user-attachments/assets/c0bbec0c-fd3e-48dc-86b3-7084a8af126e)
+![Screen_recording](https://github.com/user-attachments/assets/147b931b-8602-4b19-a634-ff6fdf0f1e82)
 
 Используемый стек:
 Многомодульная архитектура
