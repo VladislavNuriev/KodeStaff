@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.models.Department
 import com.example.data.models.EmployeesFilter
 import com.example.data.models.SortType
+import com.example.employees.models.MapperPresentation
 import com.example.employees.ui.EmployeesIntent
 import com.example.employees.ui.EmployeesScreenState
 import com.example.employees.usecases.GetEmployeesUseCase
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EmployeesViewModel @Inject constructor(
     private val getEmployees: GetEmployeesUseCase,
-    private val loadEmployees: LoadEmployeesUseCase
+    private val loadEmployees: LoadEmployeesUseCase,
+    private val mapper: MapperPresentation
 ) : ViewModel() {
 
     private val _state: MutableStateFlow<EmployeesScreenState> =
@@ -91,6 +94,8 @@ class EmployeesViewModel @Inject constructor(
                 }
             }.flatMapLatest { filter ->
                 getEmployees(filter)
+            }.map { it ->
+                mapper.modelListToUiList(it)
             }.onEach { employees ->
                 _state.update { previousState ->
                     if (previousState is EmployeesScreenState.Employees) {
@@ -111,6 +116,13 @@ class EmployeesViewModel @Inject constructor(
             is EmployeesIntent.Refresh -> refreshEmployees()
             is EmployeesIntent.DepartmentSelected -> setDepartmentFilter(intent.department)
             is EmployeesIntent.SortTypeSelected -> selectSortType(intent.sortType)
+            EmployeesIntent.ShowSortBottomSheet -> {
+                toggleSortBottomSheetVisibility()
+            }
+
+            EmployeesIntent.HideSortBottomSheet -> {
+                toggleSortBottomSheetVisibility()
+            }
         }
     }
 
@@ -124,5 +136,17 @@ class EmployeesViewModel @Inject constructor(
 
     private fun selectSortType(sortType: SortType) {
         filter.update { it.copy(sortType = sortType) }
+    }
+
+    private fun toggleSortBottomSheetVisibility() {
+        _state.update { currentState ->
+            if (currentState is EmployeesScreenState.Employees) {
+                currentState.copy(
+                    isSortBottomSheetVisible = !currentState.isSortBottomSheetVisible
+                )
+            } else {
+                currentState
+            }
+        }
     }
 }
