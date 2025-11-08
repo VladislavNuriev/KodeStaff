@@ -25,9 +25,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
@@ -51,6 +54,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtMost
@@ -58,9 +62,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.data.models.Department
-import com.example.data.models.Employee
+import com.example.data.models.SortType
 import com.example.employees.EmployeesViewModel
 import com.example.employees.R
+import com.example.employees.models.EmployeeUi
 import com.example.ui.AppGradient
 import com.example.ui.InterFontFamily
 import com.example.ui.KodeStaffTheme
@@ -81,7 +86,7 @@ fun EmployeesScreen(
             )
         }
 
-        is EmployeesScreenState.Employees ->
+        is EmployeesScreenState.Employees -> {
             EmployeesList(
                 modifier = modifier,
                 state = currentState,
@@ -95,14 +100,29 @@ fun EmployeesScreen(
                 },
                 onQueryChanged = { query ->
                     viewModel.handleIntent(EmployeesIntent.SearchQueryChanged(query))
+                },
+                onSortButtonClick = {
+                    viewModel.handleIntent(EmployeesIntent.ShowSortBottomSheet)
                 }
             )
+
+            SortBottomSheet(
+                visible = currentState.isSortBottomSheetVisible,
+                currentSort = currentState.selectedSort,
+                onSortSelected = { sortType ->
+                    viewModel.handleIntent(EmployeesIntent.SortTypeSelected(sortType))
+                    viewModel.handleIntent(EmployeesIntent.HideSortBottomSheet)
+                },
+                onDismiss = { viewModel.handleIntent(EmployeesIntent.HideSortBottomSheet) }
+            )
+        }
 
         is EmployeesScreenState.Error ->
             ErrorScreen(
                 modifier = modifier,
                 onRetryClick = { viewModel.handleIntent(EmployeesIntent.Refresh) }
             )
+
     }
 }
 
@@ -110,13 +130,9 @@ fun EmployeesScreen(
 @Composable
 fun GreetingPreview() {
     KodeStaffTheme {
-//        EmployeesList(
-//            state = mockState,
-//            onPullToRefresh = {},
-//            onDepartmentTabClick = {},
-//            onQueryChanged = {}
+//        EmployeeItem(
+//            employee = mockEmployees[0]
 //        )
-        ErrorScreen(onRetryClick = {})
     }
 }
 
@@ -126,7 +142,8 @@ private fun EmployeesList(
     state: EmployeesScreenState.Employees,
     onPullToRefresh: () -> Unit,
     onQueryChanged: (String) -> Unit,
-    onDepartmentTabClick: (department: Department?) -> Unit
+    onDepartmentTabClick: (department: Department?) -> Unit,
+    onSortButtonClick: () -> Unit
 ) {
     val pullRefreshState = rememberPullToRefreshState()
 
@@ -148,7 +165,8 @@ private fun EmployeesList(
     ) {
         SearchBar(
             onQueryChanged = onQueryChanged,
-            query = state.searchQuery
+            query = state.searchQuery,
+            onSortButtonClick = onSortButtonClick
         )
         NavigationBarDepartmentTabs(
             onTabClick = onDepartmentTabClick,
@@ -157,9 +175,7 @@ private fun EmployeesList(
         PullToRefreshBox(
             state = pullRefreshState,
             isRefreshing = state.isLoading,
-            onRefresh = {
-                onPullToRefresh
-            },
+            onRefresh = onPullToRefresh,
             modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
         ) {
             if (state.employees.isEmpty()) {
@@ -176,7 +192,8 @@ private fun EmployeesList(
                     ) {
                         EmployeeItem(
                             modifier = Modifier.offset(y = cardOffset),
-                            employee = it
+                            employee = it,
+                            isDateVisible = state.selectedSort == SortType.BIRTHDAY
                         )
                     }
                 }
@@ -195,7 +212,7 @@ private fun InitialScreen(
             .padding()
 
     ) {
-        SearchBar(onQueryChanged = {}, query = "")
+        SearchBar(onQueryChanged = {}, query = "", onSortButtonClick = {})
         NavigationBarDepartmentTabs(
             onTabClick = {},
             selectedDepartment = null
@@ -234,7 +251,8 @@ private fun DesignersPlaceholder(
 private fun SearchBar(
     modifier: Modifier = Modifier,
     query: String,
-    onQueryChanged: (String) -> Unit
+    onQueryChanged: (String) -> Unit,
+    onSortButtonClick: () -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
     Row(
@@ -274,7 +292,7 @@ private fun SearchBar(
             trailingIcon = {
                 if (isFocused && query.isNotEmpty()) {
                     Icon(
-                        painter = painterResource(com.example.ui.R.drawable.ic_x), // Замени на свой крестик
+                        painter = painterResource(com.example.ui.R.drawable.ic_x),
                         contentDescription = "Clear search",
                         Modifier.clickable { onQueryChanged("") },
                         tint = MaterialTheme.colorScheme.onSecondary
@@ -285,7 +303,10 @@ private fun SearchBar(
                     Icon(
                         painter = painterResource(R.drawable.ic_sort),
                         contentDescription = "Sort icon",
-                        Modifier.clickable(enabled = true, onClick = {})
+                        Modifier.clickable(
+                            enabled = true,
+                            onClick = onSortButtonClick
+                        )
                     )
                 }
             },
@@ -397,7 +418,8 @@ fun DepartmentTab(
 @Composable
 fun EmployeeItem(
     modifier: Modifier = Modifier,
-    employee: Employee
+    employee: EmployeeUi,
+    isDateVisible: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -455,6 +477,17 @@ fun EmployeeItem(
                 fontFamily = InterFontFamily,
                 fontWeight = FontWeight.Normal,
                 color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+        if (isDateVisible) {
+            Text(
+                text = employee.birthday,
+                fontSize = 15.sp,
+                fontFamily = InterFontFamily,
+                fontWeight = FontWeight.Normal,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
             )
         }
     }
@@ -594,4 +627,62 @@ fun ErrorScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SortBottomSheet(
+    modifier: Modifier = Modifier,
+    visible: Boolean,
+    currentSort: SortType,
+    onSortSelected: (SortType) -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (!visible) return
+    ModalBottomSheet(
+        modifier = modifier
+            .padding(start = 8.dp, end = 8.dp),
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        containerColor = Color.White
+    ) {
+        Column {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = "Сортировка",
+                fontSize = 20.sp,
+                fontFamily = InterFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
+            )
 
+            val sortOptions = listOf(
+                SortType.ALPHABETIC to "По алфавиту",
+                SortType.BIRTHDAY to "По дню рождения"
+            )
+
+            sortOptions.forEach { (sortType, label) ->
+                val selected = currentSort == sortType
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .clickable { onSortSelected(sortType) },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selected,
+                        onClick = { onSortSelected(sortType) }
+                    )
+                    Text(
+                        text = label,
+                        fontSize = 16.sp,
+                        fontFamily = InterFontFamily,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+    }
+}

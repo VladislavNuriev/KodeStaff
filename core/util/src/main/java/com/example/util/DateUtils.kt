@@ -5,6 +5,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 object DateUtils {
 
@@ -26,21 +27,25 @@ object DateUtils {
         }
     }
 
+    fun timeStampToDayMonth(birthdayTimestamp: Long): String {
+        val localDate = LocalDate.ofEpochDay(birthdayTimestamp / 86400000)
+        val formatter = DateTimeFormatter.ofPattern("d MMM", Locale.forLanguageTag("ru"))
+        return localDate.format(formatter)
+    }
+
     fun calculateDaysUntilNextBirthday(birthdayTimestamp: Long): Int {
-        require(birthdayTimestamp > 0) { "Некорректная временная метка: $birthdayTimestamp" }
         val birthDate = LocalDate.ofEpochDay(birthdayTimestamp / MILLIS_IN_DAY)
         val today = LocalDate.now()
 
         val nextBirthday = birthDate.withYear(today.year)
 
-        // Если ДР прошёл в этом году - берём следующий год
+        // Если ДР прошёл в этом году, берём следующий год
         val adjustedBirthday = if (nextBirthday.isBefore(today)) {
             nextBirthday.plusYears(1)
         } else {
             nextBirthday
         }
-
-        // Разница в днях
+        // Разница в днях между "сегодня" и "следующим др"
         return ChronoUnit.DAYS.between(today, adjustedBirthday).toInt()
     }
 }

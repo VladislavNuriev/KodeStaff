@@ -8,4 +8,6 @@ sealed interface EmployeesIntent {
     data class SearchQueryChanged(val query: String) : EmployeesIntent
     data class DepartmentSelected(val department: Department?) : EmployeesIntent
     data class SortTypeSelected(val sortType: SortType) : EmployeesIntent
+    data object ShowSortBottomSheet : EmployeesIntent
+    data object HideSortBottomSheet : EmployeesIntent
 }
