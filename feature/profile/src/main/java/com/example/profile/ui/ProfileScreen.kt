@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,16 +34,15 @@ import com.example.profile.ProfileViewModel
 import com.example.profile.R
 import com.example.profile.models.EmployeeUi
 import com.example.ui.InterFontFamily
-import com.example.ui.KodeStaffTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    employee: EmployeeUi,
+    employeeId: String,
     viewModel: ProfileViewModel = viewModel {
-        ProfileViewModel(employee)
+        ProfileViewModel(employeeId)
     },
     onFinished: () -> Unit
 ) {
@@ -52,7 +50,7 @@ fun ProfileScreen(
 
     when (val currentState = state) {
         is ProfileScreenState.Profile ->
-            ProfileScreen(
+            Profile(
                 modifier = modifier,
                 onBackClicked = {
                     viewModel.handleIntent(ProfileIntent.Back)
@@ -66,20 +64,8 @@ fun ProfileScreen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingPreview() {
-    KodeStaffTheme {
-        ProfileScreen(
-            onBackClicked = {},
-            employee = mockEmployees[0]
-        )
-    }
-}
-
-
-@Composable
-fun ProfileScreen(
+fun Profile(
     modifier: Modifier = Modifier,
     employee: EmployeeUi,
     onBackClicked: () -> Unit
