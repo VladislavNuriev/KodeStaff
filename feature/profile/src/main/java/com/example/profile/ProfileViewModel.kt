@@ -1,7 +1,6 @@
 package com.example.profile
 
 import androidx.lifecycle.ViewModel
-import com.example.profile.models.EmployeeUi
 import com.example.profile.ui.ProfileIntent
 import com.example.profile.ui.ProfileScreenState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +14,7 @@ import kotlinx.coroutines.flow.update
 //) : ViewModel() {
 
 class ProfileViewModel(
-    private val employee: EmployeeUi
+    private val employeeId: String
 ) : ViewModel() {
 
     private val _state: MutableStateFlow<ProfileScreenState> =
@@ -23,9 +22,7 @@ class ProfileViewModel(
     val state: StateFlow<ProfileScreenState> = _state.asStateFlow()
 
     init {
-        _state.update {
-            ProfileScreenState.Profile(employee)
-        }
+
     }
 
     fun handleIntent(intent: ProfileIntent) {

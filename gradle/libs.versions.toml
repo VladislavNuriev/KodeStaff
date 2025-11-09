@@ -14,6 +14,7 @@ lifecycleViewmodelCompose = "2.9.4"
 loggingInterceptor = "5.2.1"
 material = "1.13.0"
 materialVersion = "1.9.4"
+navigationCompose = "2.9.6"
 okhttp = "5.2.1"
 retrofit = "3.0.0"
 hilt-version = "2.57.2"
@@ -26,6 +27,7 @@ jetbrainsKotlinJvm = "2.2.20"
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "materialVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }

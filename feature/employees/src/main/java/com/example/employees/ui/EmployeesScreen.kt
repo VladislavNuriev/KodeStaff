@@ -55,7 +55,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
@@ -68,14 +67,13 @@ import com.example.employees.R
 import com.example.employees.models.EmployeeUi
 import com.example.ui.AppGradient
 import com.example.ui.InterFontFamily
-import com.example.ui.KodeStaffTheme
 
 
 @Composable
 fun EmployeesScreen(
     modifier: Modifier = Modifier,
     viewModel: EmployeesViewModel = hiltViewModel(),
-    onEmployeeClick: () -> Unit = {},
+    onEmployeeClick: (EmployeeUi) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -103,7 +101,8 @@ fun EmployeesScreen(
                 },
                 onSortButtonClick = {
                     viewModel.handleIntent(EmployeesIntent.ShowSortBottomSheet)
-                }
+                },
+                onEmployeeClick = onEmployeeClick
             )
 
             SortBottomSheet(
@@ -126,16 +125,6 @@ fun EmployeesScreen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun GreetingPreview() {
-    KodeStaffTheme {
-//        EmployeeItem(
-//            employee = mockEmployees[0]
-//        )
-    }
-}
-
 @Composable
 private fun EmployeesList(
     modifier: Modifier = Modifier,
@@ -143,7 +132,8 @@ private fun EmployeesList(
     onPullToRefresh: () -> Unit,
     onQueryChanged: (String) -> Unit,
     onDepartmentTabClick: (department: Department?) -> Unit,
-    onSortButtonClick: () -> Unit
+    onSortButtonClick: () -> Unit,
+    onEmployeeClick: (EmployeeUi) -> Unit
 ) {
     val pullRefreshState = rememberPullToRefreshState()
 
@@ -193,7 +183,8 @@ private fun EmployeesList(
                         EmployeeItem(
                             modifier = Modifier.offset(y = cardOffset),
                             employee = it,
-                            isDateVisible = state.selectedSort == SortType.BIRTHDAY
+                            isDateVisible = state.selectedSort == SortType.BIRTHDAY,
+                            onClick = onEmployeeClick
                         )
                     }
                 }
@@ -419,13 +410,15 @@ fun DepartmentTab(
 fun EmployeeItem(
     modifier: Modifier = Modifier,
     employee: EmployeeUi,
-    isDateVisible: Boolean = false
+    isDateVisible: Boolean = false,
+    onClick: (EmployeeUi) -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
             .padding(top = 6.dp, bottom = 6.dp, end = 4.dp)
+            .clickable(enabled = true, onClick = { onClick(employee) })
     ) {
         Box(
             modifier = Modifier
