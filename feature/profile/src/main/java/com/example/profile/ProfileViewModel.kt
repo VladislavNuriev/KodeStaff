@@ -23,7 +23,9 @@ class ProfileViewModel(
     val state: StateFlow<ProfileScreenState> = _state.asStateFlow()
 
     init {
-
+        _state.update {
+            ProfileScreenState.Profile(employee)
+        }
     }
 
     fun handleIntent(intent: ProfileIntent) {

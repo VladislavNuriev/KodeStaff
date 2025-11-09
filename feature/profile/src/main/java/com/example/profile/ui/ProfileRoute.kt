@@ -19,6 +19,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,14 +42,48 @@ import com.example.ui.KodeStaffTheme
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    onBackClicked: () -> Unit,
     employee: EmployeeUi,
     viewModel: ProfileViewModel = viewModel {
         ProfileViewModel(employee)
-    }
+    },
+    onFinished: () -> Unit
 ) {
-    val state = viewModel.state
+    val state by viewModel.state.collectAsState()
 
+    when (val currentState = state) {
+        is ProfileScreenState.Profile ->
+            ProfileScreen(
+                modifier = modifier,
+                onBackClicked = {
+                    viewModel.handleIntent(ProfileIntent.Back)
+                },
+                employee = currentState.employee
+            )
+
+        is ProfileScreenState.Error -> {}
+        ProfileScreenState.Finished -> onFinished()
+        ProfileScreenState.Initial -> {}
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun GreetingPreview() {
+    KodeStaffTheme {
+        ProfileScreen(
+            onBackClicked = {},
+            employee = mockEmployees[0]
+        )
+    }
+}
+
+
+@Composable
+fun ProfileScreen(
+    modifier: Modifier = Modifier,
+    employee: EmployeeUi,
+    onBackClicked: () -> Unit
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -158,16 +194,5 @@ fun ProfileScreen(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun GreetingPreview() {
-    KodeStaffTheme {
-        ProfileScreen(
-            onBackClicked = {},
-            employee = mockEmployees[0]
-        )
     }
 }
