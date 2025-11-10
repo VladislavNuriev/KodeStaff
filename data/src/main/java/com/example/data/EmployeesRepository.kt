@@ -10,4 +10,6 @@ interface EmployeesRepository {
     ): Flow<List<Employee>>
 
     suspend fun loadEmployees(): Result<Unit>
+
+    suspend fun getEmployee(id: String): Result<Employee>
 }
