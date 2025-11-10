@@ -1,7 +1,7 @@
 Разрабатывается в соответствии с требованиями https://github.com/appKODE/trainee-test-android
 Приложение позволяет загружать список сотрудников и фильтровать их поисковым запросом, а также по принадлежности к отделу. Доступна сортировка по имени (по умолчанию) и дню рождения. По клику на сотрудника из списка открывается профиль выбранного сотрудника.
 
-![Screen_recording_new-ezgif com-optimize](https://github.com/user-attachments/assets/f0746e3d-5f14-4da0-87f7-02ba60cc6c96)
+![Uploading Screen_recording_new-ezgif.com-optimize.gif…]()
 
 
 Используемый стек:
