@@ -10,6 +10,7 @@ import com.example.util.DateUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -38,6 +39,15 @@ class RepositoryImpl @Inject constructor(
                     mapper.responseDtoToListModel(apiService.getEmployees())
                 }
             _employees.value = employeesList
+        }
+    }
+
+    override suspend fun getEmployee(id: String): Result<Employee> {
+        return runCatching {
+            withContext(context = Dispatchers.IO) {
+                _employees.value.find { it.id == id }
+                    ?: throw NoSuchElementException("Пользователь не найден")
+            }
         }
     }
 

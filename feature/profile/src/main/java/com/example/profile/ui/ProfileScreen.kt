@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.profile.ProfileViewModel
 import com.example.profile.R
 import com.example.profile.models.EmployeeUi
@@ -41,9 +41,11 @@ import com.example.ui.InterFontFamily
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     employeeId: String,
-    viewModel: ProfileViewModel = viewModel {
-        ProfileViewModel(employeeId)
-    },
+    viewModel: ProfileViewModel = hiltViewModel(
+        creationCallback = { factory: ProfileViewModel.Factory ->
+            factory.create(employeeId)
+        }
+    ),
     onFinished: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
